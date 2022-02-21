@@ -5,15 +5,15 @@
 STATICA_HACK = True
 globals()['kcah_acitats'[::-1].upper()] = False
 if STATICA_HACK:
-    from .batch_norm import *
-    from .common import *
-    from .conv2d import *
-    from .fc import *
-    from .layer_norm import *
-    from .linearwrap import *
-    from .nonlin import *
-    from .pool import *
-    from .regularize import *
+    from batch_norm import *
+    from common import *
+    from conv2d import *
+    from fc import *
+    from layer_norm import *
+    from linearwrap import *
+    from nonlin import *
+    from pool import *
+    from regularize import *
 
 
 from pkgutil import iter_modules

@@ -16,11 +16,14 @@ try:
         if not len(splits):
             continue
         answer = splits[-1].lower()
-        if answer in ['yes', 'no']:
-            if 'cuda' in line.lower() and answer == 'yes':
-                # issue#1197
-                print("OpenCV is built with CUDA support. "
-                      "This may cause slow initialization or sometimes segfault with TensorFlow.")
+        if (
+            answer in ['yes', 'no']
+            and 'cuda' in line.lower()
+            and answer == 'yes'
+        ):
+            # issue#1197
+            print("OpenCV is built with CUDA support. "
+                  "This may cause slow initialization or sometimes segfault with TensorFlow.")
         if answer == 'openmp':
             print("OpenCV is built with OpenMP support. This usually results in poor performance. For details, see "
                   "https://github.com/tensorpack/benchmarks/blob/master/ImageNet/benchmark-opencv-resize.py")
@@ -32,11 +35,6 @@ os.environ['TF_AUTOTUNE_THRESHOLD'] = '2'   # use more warm-up
 
 # Since 1.3, this is not needed
 os.environ['TF_AVGPOOL_USE_CUDNN'] = '1'   # issue#8566
-
-# TF1.5 features
-os.environ['TF_SYNC_ON_FINISH'] = '0'   # will become default
-os.environ['TF_GPU_THREAD_MODE'] = 'gpu_private'
-os.environ['TF_GPU_THREAD_COUNT'] = '2'
 
 # Available in TF1.6+ & cudnn7. Haven't seen different performance on R50.
 # NOTE we disable it because:
@@ -99,4 +97,4 @@ else:
 # These lines will be programatically read/write by setup.py
 # Don't touch them.
 __version__ = '0.11'
-__git_version__ = __version__
+__git_version__ = "0.11"

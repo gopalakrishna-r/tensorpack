@@ -35,10 +35,12 @@ class CallbackTimeLogger(object):
         """ log the time of some heavy callbacks """
         if self.tot < 2:
             return
-        msgs = []
-        for name, t in self.times:
-            if t / self.tot > 0.3 and t > 1:
-                msgs.append(name + ": " + humanize_time_delta(t))
+        msgs = [
+            f'{name}: ' + humanize_time_delta(t)
+            for name, t in self.times
+            if t / self.tot > 0.3 and t > 1
+        ]
+
         logger.info(
             "Callbacks took {:.3f} sec in total. {}".format(
                 self.tot, '; '.join(msgs)))

@@ -104,10 +104,7 @@ class ScalarStats(Inferencer):
                 corresponding tensors have to be scalar.
             prefix(str): a prefix for logging
         """
-        if not isinstance(names, list):
-            self.names = [names]
-        else:
-            self.names = names
+        self.names = [names] if not isinstance(names, list) else names
         self.prefix = prefix
 
     def _before_inference(self):
@@ -204,5 +201,7 @@ class BinaryClassificationStats(Inferencer):
         self.stat.feed(pred, label)
 
     def _after_inference(self):
-        return {self.prefix + '_precision': self.stat.precision,
-                self.prefix + '_recall': self.stat.recall}
+        return {
+            f'{self.prefix}_precision': self.stat.precision,
+            f'{self.prefix}_recall': self.stat.recall,
+        }

@@ -50,9 +50,11 @@ def Conv2D(
     """
     if kernel_initializer is None:
         if get_tf_version_tuple() <= (1, 12):
-            kernel_initializer = tf.contrib.layers.variance_scaling_initializer(2.0)  # deprecated
+            kernel_initializer = tf.contrib.layers.variance_scaling_initializer(
+                2.0)  # deprecated
         else:
-            kernel_initializer = tf.keras.initializers.VarianceScaling(2.0, distribution='untruncated_normal')
+            kernel_initializer = tf.keras.initializers.VarianceScaling(
+                2.0, distribution='untruncated_normal')
     dilation_rate = shape2d(dilation_rate)
 
     if split == 1 and dilation_rate == [1, 1]:
@@ -94,7 +96,8 @@ def Conv2D(
 
         out_channel = filters
         assert out_channel % split == 0, out_channel
-        assert dilation_rate == [1, 1] or get_tf_version_tuple() >= (1, 5), 'TF>=1.5 required for dilated conv.'
+        assert dilation_rate == [1, 1] or get_tf_version_tuple() >= (
+            1, 5), 'TF>=1.5 required for dilated conv.'
 
         kernel_shape = shape2d(kernel_size)
         filter_shape = kernel_shape + [in_channel // split, out_channel]
@@ -102,7 +105,8 @@ def Conv2D(
 
         kwargs = {"data_format": data_format}
         if get_tf_version_tuple() >= (1, 5):
-            kwargs['dilations'] = shape4d(dilation_rate, data_format=data_format)
+            kwargs['dilations'] = shape4d(
+                dilation_rate, data_format=data_format)
 
         # matching input dtype (ex. tf.float16) since the default dtype of variable if tf.float32
         inputs_dtype = inputs.dtype
@@ -110,7 +114,8 @@ def Conv2D(
             'W', filter_shape, dtype=inputs_dtype, initializer=kernel_initializer)
 
         if use_bias:
-            b = tf.get_variable('b', [out_channel], dtype=inputs_dtype, initializer=bias_initializer)
+            b = tf.get_variable(
+                'b', [out_channel], dtype=inputs_dtype, initializer=bias_initializer)
 
         if split == 1:
             conv = tf.nn.conv2d(inputs, W, stride, padding.upper(), **kwargs)
@@ -118,7 +123,8 @@ def Conv2D(
             conv = None
             if get_tf_version_tuple() >= (1, 13):
                 try:
-                    conv = tf.nn.conv2d(inputs, W, stride, padding.upper(), **kwargs)
+                    conv = tf.nn.conv2d(inputs, W, stride,
+                                        padding.upper(), **kwargs)
                 except ValueError:
                     log_once("CUDNN group convolution support is only available with "
                              "https://github.com/tensorflow/tensorflow/pull/25818 . "
@@ -130,7 +136,8 @@ def Conv2D(
                            for i, k in zip(inputs, kernels)]
                 conv = tf.concat(outputs, channel_axis)
 
-        ret = tf.nn.bias_add(conv, b, data_format=data_format) if use_bias else conv
+        ret = tf.nn.bias_add(
+            conv, b, data_format=data_format) if use_bias else conv
         if activation is not None:
             ret = activation(ret)
         ret = tf.identity(ret, name='output')
@@ -177,9 +184,11 @@ def Conv2DTranspose(
     """
     if kernel_initializer is None:
         if get_tf_version_tuple() <= (1, 12):
-            kernel_initializer = tf.contrib.layers.variance_scaling_initializer(2.0)  # deprecated
+            kernel_initializer = tf.contrib.layers.variance_scaling_initializer(
+                2.0)  # deprecated
         else:
-            kernel_initializer = tf.keras.initializers.VarianceScaling(2.0, distribution='untruncated_normal')
+            kernel_initializer = tf.keras.initializers.VarianceScaling(
+                2.0, distribution='untruncated_normal')
 
     if get_tf_version_tuple() <= (1, 12):
         with rename_get_variable({'kernel': 'W', 'bias': 'b'}):
@@ -212,7 +221,8 @@ def Conv2DTranspose(
         strides2d = shape2d(strides)
         kernel_shape = shape2d(kernel_size)
 
-        assert padding.lower() in ['valid', 'same'], "Padding {} is not supported!".format(padding)
+        assert padding.lower() in [
+            'valid', 'same'], "Padding {} is not supported!".format(padding)
 
         if padding.lower() == 'valid':
             shape_res2d = [max(kernel_shape[0] - strides2d[0], 0),
@@ -227,7 +237,8 @@ def Conv2DTranspose(
                  shape_dyn[2] * strides2d[0] + shape_res2d[0],
                  shape_dyn[3] * strides2d[1] + shape_res2d[1]])
             out_shape3_sta = [filters,
-                              None if shape_sta[2] is None else shape_sta[2] * strides2d[0] + shape_res2d[0],
+                              None if shape_sta[2] is None else shape_sta[2] *
+                              strides2d[0] + shape_res2d[0],
                               None if shape_sta[3] is None else shape_sta[3] * strides2d[1] + shape_res2d[1]]
         else:
             channels_in = shape_sta[-1]
@@ -237,14 +248,16 @@ def Conv2DTranspose(
                  shape_dyn[2] * strides2d[1] + shape_res2d[1],
                  filters])
             out_shape3_sta = [None if shape_sta[1] is None else shape_sta[1] * strides2d[0] + shape_res2d[0],
-                              None if shape_sta[2] is None else shape_sta[2] * strides2d[1] + shape_res2d[1],
+                              None if shape_sta[2] is None else shape_sta[2] *
+                              strides2d[1] + shape_res2d[1],
                               filters]
 
         inputs_dtype = inputs.dtype
         W = tf.get_variable('W', kernel_shape + [filters, channels_in],
                             dtype=inputs_dtype, initializer=kernel_initializer)
         if use_bias:
-            b = tf.get_variable('b', [filters], dtype=inputs_dtype, initializer=bias_initializer)
+            b = tf.get_variable(
+                'b', [filters], dtype=inputs_dtype, initializer=bias_initializer)
         conv = tf.nn.conv2d_transpose(
             inputs, W, out_shape_dyn,
             shape4d(strides, data_format=data_format),
@@ -252,7 +265,8 @@ def Conv2DTranspose(
             data_format=data_format)
         conv.set_shape(tf.TensorShape([shape_sta[0]] + out_shape3_sta))
 
-        ret = tf.nn.bias_add(conv, b, data_format=data_format) if use_bias else conv
+        ret = tf.nn.bias_add(
+            conv, b, data_format=data_format) if use_bias else conv
         if activation is not None:
             ret = activation(ret)
         ret = tf.identity(ret, name='output')
@@ -265,3 +279,4 @@ def Conv2DTranspose(
 
 
 Deconv2D = Conv2DTranspose
+

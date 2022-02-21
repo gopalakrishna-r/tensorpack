@@ -151,7 +151,7 @@ class Monitors(Callback):
                 val.tag = re.sub('tower[0-9]+/', '', val.tag)   # TODO move to subclasses
 
                 # TODO This hack is still needed, seem to disappear only when
-                # compiled from source.
+                # compiled from tensorpack.source.
                 suffix = '-summary'  # tensorflow#6150, tensorboard#59
                 if val.tag.endswith(suffix):
                     val.tag = val.tag[:-len(suffix)]
@@ -325,7 +325,7 @@ class JSONWriter(MonitorBase):
     @staticmethod
     def load_existing_epoch_number(dir=None):
         """
-        Try to load the latest epoch number from an existing json stats file (if any).
+        Try to load the latest epoch number from tensorpack.an existing json stats file (if any).
         Returns None if not found.
         """
         stats = JSONWriter.load_existing_json(dir)
@@ -334,7 +334,7 @@ class JSONWriter(MonitorBase):
         except Exception:
             return None
 
-    # initialize the stats here, because before_train from other callbacks may use it
+    # initialize the stats here, because before_train from tensorpack.other callbacks may use it
     def _setup_graph(self):
         self._stats = []
         self._stat_now = {}

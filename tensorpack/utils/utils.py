@@ -180,22 +180,15 @@ def _pick_tqdm_interval(file):
 
     if isatty:
         return 0.5
-    else:
         # When run under mpirun/slurm, isatty is always False.
         # Here we apply some hacky heuristics for slurm.
-        if 'SLURM_JOB_ID' in os.environ:
-            if int(os.environ.get('SLURM_JOB_NUM_NODES', 1)) > 1:
-                # multi-machine job, probably not interactive
-                return 60
-            else:
-                # possibly interactive, so let's be conservative
-                return 15
+    if 'SLURM_JOB_ID' in os.environ:
+        return 60 if int(os.environ.get('SLURM_JOB_NUM_NODES', 1)) > 1 else 15
+    if 'OMPI_COMM_WORLD_SIZE' in os.environ:
+        return 60
 
-        if 'OMPI_COMM_WORLD_SIZE' in os.environ:
-            return 60
-
-        # If not a tty, don't refresh progress bar that often
-        return 180
+    # If not a tty, don't refresh progress bar that often
+    return 180
 
 
 def get_tqdm_kwargs(**kwargs):
@@ -258,9 +251,8 @@ def find_library_full_path(name):
                     sofile = line[-1]
 
                     basename = os.path.basename(sofile)
-                    if 'lib' + name + '.so' in basename:
-                        if os.path.isfile(sofile):
-                            return os.path.realpath(sofile)
+                    if f'lib{name}.so' in basename and os.path.isfile(sofile):
+                        return os.path.realpath(sofile)
         except IOError:
             # can fail in certain environment (e.g. chroot)
             # if the pids are incorrectly mapped

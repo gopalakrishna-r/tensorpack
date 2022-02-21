@@ -45,13 +45,10 @@ def convert_to_tflayer_args(args_names, name_mapping):
         def decorated_func(inputs, *args, **kwargs):
             kwargs = map_common_tfargs(kwargs)
 
-            posarg_dic = {}
             assert len(args) <= len(args_names), \
                 "Please use kwargs instead of positional args to call this model, " \
                 "except for the following arguments: {}".format(', '.join(args_names))
-            for pos_arg, name in zip(args, args_names):
-                posarg_dic[name] = pos_arg
-
+            posarg_dic = {name: pos_arg for pos_arg, name in zip(args, args_names)}
             ret = {}
             for name, arg in six.iteritems(kwargs):
                 newname = name_mapping.get(name, None)
@@ -114,21 +111,22 @@ def rename_tflayer_get_variable():
 
 
 def monkeypatch_tf_layers():
-    if get_tf_version_tuple() < (1, 4):
-        if not hasattr(tf.layers, 'Dense'):
-            from tensorflow.python.layers.core import Dense
-            tf.layers.Dense = Dense
+    if get_tf_version_tuple() >= (1, 4):
+        return
+    if not hasattr(tf.layers, 'Dense'):
+        from tensorflow.python.layers.core import Dense
+        tf.layers.Dense = Dense
 
-            from tensorflow.python.layers.normalization import BatchNormalization
-            tf.layers.BatchNormalization = BatchNormalization
+        from tensorflow.python.layers.normalization import BatchNormalization
+        tf.layers.BatchNormalization = BatchNormalization
 
-            from tensorflow.python.layers.convolutional import Conv2DTranspose, Conv2D
-            tf.layers.Conv2DTranspose = Conv2DTranspose
-            tf.layers.Conv2D = Conv2D
+        from tensorflow.python.layers.convolutional import Conv2DTranspose, Conv2D
+        tf.layers.Conv2DTranspose = Conv2DTranspose
+        tf.layers.Conv2D = Conv2D
 
-            from tensorflow.python.layers.pooling import MaxPooling2D, AveragePooling2D
-            tf.layers.MaxPooling2D = MaxPooling2D
-            tf.layers.AveragePooling2D = AveragePooling2D
+        from tensorflow.python.layers.pooling import MaxPooling2D, AveragePooling2D
+        tf.layers.MaxPooling2D = MaxPooling2D
+        tf.layers.AveragePooling2D = AveragePooling2D
 
 
 monkeypatch_tf_layers()

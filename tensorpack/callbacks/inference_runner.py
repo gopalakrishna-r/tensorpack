@@ -45,7 +45,9 @@ def _inference_context():
         yield
     except (StopIteration, tf.errors.CancelledError):
         logger.error(
-            "[InferenceRunner] input stopped before reaching its __len__()! " + msg)
+            f'[InferenceRunner] input stopped before reaching its __len__()! {msg}'
+        )
+
         raise
     except tf.errors.OutOfRangeError:   # tf.data reaches an end
         pass
@@ -67,10 +69,7 @@ class InferenceRunnerBase(Callback):
             infs (list[Inferencer]): list of :class:`Inferencer` to run.
         """
         self._input_source = input
-        if not isinstance(infs, list):
-            self.infs = [infs]
-        else:
-            self.infs = infs
+        self.infs = [infs] if not isinstance(infs, list) else infs
         for v in self.infs:
             assert isinstance(v, Inferencer), v
 
@@ -239,7 +238,7 @@ class DataParallelInferenceRunner(InferenceRunnerBase):
         self._input_callbacks = Callbacks(input_callbacks)
 
         # TODO InputSource might have hooks which break us.
-        # e.g. hooks from StagingInput will force the consumption
+        # e.g. hooks from tensorpack.StagingInput will force the consumption
         # of nr_tower datapoints in every run.
         input_hooks = self._input_callbacks.get_hooks()
         self._hooks.extend([self._build_hook(inf) for inf in self.infs] + input_hooks)

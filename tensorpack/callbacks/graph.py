@@ -38,10 +38,7 @@ class RunOp(Callback):
             <https://github.com/tensorpack/tensorpack/blob/master/examples/DeepQNetwork/>`_
             uses this callback to update target network.
         """
-        if not callable(op):
-            self.setup_func = lambda: op  # noqa
-        else:
-            self.setup_func = op
+        self.setup_func = (lambda: op) if not callable(op) else op
         self.run_before = run_before
         self.run_as_trigger = run_as_trigger
         self.run_step = run_step
@@ -158,9 +155,7 @@ class DumpTensors(ProcessTensors):
         dir = logger.get_logger_dir()
 
         def fn(*args):
-            dic = {}
-            for name, val in zip(self._names, args):
-                dic[name] = val
+            dic = dict(zip(self._names, args))
             fname = os.path.join(
                 dir, 'DumpTensor-{}.npz'.format(self.global_step))
             np.savez(fname, **dic)
@@ -187,10 +182,7 @@ class DumpTensorAsImage(Callback):
         """
         op_name, self.tensor_name = get_op_tensor_name(tensor_name)
         self.func = map_func
-        if prefix is None:
-            self.prefix = op_name
-        else:
-            self.prefix = prefix
+        self.prefix = op_name if prefix is None else prefix
         self.log_dir = logger.get_logger_dir()
         self.scale = scale
 
@@ -238,8 +230,7 @@ class CheckNumerics(RunOp):
     def _get_op(self):
         vars = tf.trainable_variables()
         ops = [tf.check_numerics(v, "CheckNumerics['{}']".format(v.op.name)).op for v in vars]
-        check_op = tf.group(*ops, name="CheckAllNumerics")
-        return check_op
+        return tf.group(*ops, name="CheckAllNumerics")
 
 
 try:

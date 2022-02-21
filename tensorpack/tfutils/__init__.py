@@ -13,7 +13,7 @@ if STATICA_HACK:
     from .argscope import *
 
 
-# don't want to include everything from .tower
+# don't want to include everything from tower
 __all__ = ['get_current_tower_context', 'TowerContext']
 
 
