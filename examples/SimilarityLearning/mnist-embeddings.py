@@ -246,7 +246,7 @@ class SiameseModel(EmbeddingModel):
         x, y = self.embed([x, y])
 
         # tag the embedding of 'input' with name 'emb', just for inference later on
-        with tf.variable_scope(tf.get_variable_scope(), reuse=True):
+        with tf.variable_scope(tf.compat.v1.get_variable_scope(), reuse=True):
             tf.identity(self.embed(single_input), name="emb")
 
         # compute the actual loss
@@ -263,7 +263,7 @@ class CosineModel(SiameseModel):
         single_input = x
         x, y = self.embed([x, y])
 
-        with tf.variable_scope(tf.get_variable_scope(), reuse=True):
+        with tf.variable_scope(tf.compat.v1.get_variable_scope(), reuse=True):
             tf.identity(self.embed(single_input), name="emb")
 
         cost = siamese_cosine_loss(x, y, label, scope="loss")
@@ -291,7 +291,7 @@ class TripletModel(EmbeddingModel):
         single_input = a
         a, p, n = self.embed([a, p, n])
 
-        with tf.variable_scope(tf.get_variable_scope(), reuse=True):
+        with tf.variable_scope(tf.compat.v1.get_variable_scope(), reuse=True):
             tf.identity(self.embed(single_input), name="emb")
 
         cost, pos_dist, neg_dist = self.loss(a, p, n)

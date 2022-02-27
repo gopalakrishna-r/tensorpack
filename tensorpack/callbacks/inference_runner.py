@@ -145,7 +145,7 @@ class InferenceRunner(InferenceRunnerBase):
         logger.info("[InferenceRunner] Building tower '{}' on device {} {}...".format(
             self._tower_name, self._device,
             "with variable scope '{}'".format(vs_name) if vs_name else ''))
-        with tf.variable_scope(tf.get_variable_scope(), reuse=True), \
+        with tf.variable_scope(tf.compat.v1.get_variable_scope(), reuse=True), \
                 tf.device(self._device), \
                 PredictTowerContext(self._tower_name, vs_name=vs_name):
             self._tower_func(*self._input_source.get_input_tensors())
@@ -222,7 +222,7 @@ class DataParallelInferenceRunner(InferenceRunnerBase):
             self._tower_func = self.trainer.tower_func
 
         input_callbacks = self._input_source.setup(self._tower_func.input_signature)
-        with tf.variable_scope(tf.get_variable_scope(), reuse=True):
+        with tf.variable_scope(tf.compat.v1.get_variable_scope(), reuse=True):
             for idx, dev in enumerate(self._devices):
                 vs_name = self.trainer._vs_name_for_predictor(idx)
                 with tf.device(dev), PredictTowerContext(

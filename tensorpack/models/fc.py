@@ -46,15 +46,10 @@ def FullyConnected(
     * ``W``: weights of shape [in_dim, out_dim]
     * ``b``: bias
     """
-    if kernel_initializer is None:
-        if get_tf_version_tuple() <= (1, 12):
-            kernel_initializer = tf.contrib.layers.variance_scaling_initializer(2.0)  # deprecated
-        else:
-            kernel_initializer = tf.keras.initializers.VarianceScaling(2.0, distribution='untruncated_normal')
 
     inputs = batch_flatten(inputs)
     with rename_get_variable({'kernel': 'W', 'bias': 'b'}):
-        layer = tf.layers.Dense(
+        layer = tf.keras.layers.Dense(
             units=units,
             activation=activation,
             use_bias=use_bias,
@@ -62,9 +57,8 @@ def FullyConnected(
             bias_initializer=bias_initializer,
             kernel_regularizer=kernel_regularizer,
             bias_regularizer=bias_regularizer,
-            activity_regularizer=activity_regularizer,
-            _reuse=tf.get_variable_scope().reuse)
-        ret = layer.apply(inputs, scope=tf.get_variable_scope())
+            activity_regularizer=activity_regularizer)
+        ret = layer.apply(inputs)
         ret = tf.identity(ret, name='output')
 
     ret.variables = VariableHolder(W=layer.kernel)

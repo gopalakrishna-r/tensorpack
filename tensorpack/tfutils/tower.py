@@ -94,7 +94,7 @@ class BaseTowerContext(object):
         """
         if not len(self._name):
             # work around https://github.com/tensorflow/tensorflow/issues/14703
-            return [tf.variable_scope(tf.get_variable_scope())]
+            return [tf.variable_scope(tf.compat.v1.get_variable_scope())]
 
         ret = []
 
@@ -102,7 +102,7 @@ class BaseTowerContext(object):
             ret.append(tf.variable_scope(self._vs_name))
         else:
             # caller should have handled reuse outside of TowerContext
-            ret.append(tf.variable_scope(tf.get_variable_scope()))
+            ret.append(tf.variable_scope(tf.compat.v1.get_variable_scope()))
 
         # always clear existing ns  # TODO check existing ns
         if len(self._name):
@@ -176,7 +176,7 @@ class TrainTowerContext(BaseTowerContext):
         if self.index > 0:
             assert self.total > self.index, "(index, total) = ({}, {})".format(self.index, self.total)
 
-        vs = tf.get_variable_scope()
+        vs = tf.compat.v1.get_variable_scope()
         assert vs.name == '', "Cannot nest TrainTowerContext with an existing variable scope!"
         if vs_name:
             assert not vs.reuse, \
@@ -204,7 +204,7 @@ class PredictTowerContext(BaseTowerContext):
         super(PredictTowerContext, self).__init__(ns_name, vs_name)
         self._is_training = False
 
-        self._initial_vs_reuse = tf.get_variable_scope().reuse
+        self._initial_vs_reuse = tf.compat.v1.get_variable_scope().reuse
 
     @property
     def has_own_variables(self):

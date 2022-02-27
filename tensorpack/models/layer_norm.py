@@ -37,7 +37,7 @@ def LayerNorm(
     data_format = get_data_format(data_format, keras_mode=False)
     shape = x.get_shape().as_list()
     ndims = len(shape)
-    assert ndims in [2, 4]
+    assert ndims in {2, 4}
 
     mean, var = tf.nn.moments(x, list(range(1, len(shape))), keep_dims=True)
 

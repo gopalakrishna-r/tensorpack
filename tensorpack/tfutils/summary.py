@@ -236,7 +236,7 @@ def add_moving_summary(*args, **kwargs):
     except Exception:
         pass
 
-    if tf.get_variable_scope().reuse is True:
+    if tf.compat.v1.get_variable_scope().reuse is True:
         logger.warn("add_moving_summary() called under reuse=True scope, ignored.")
         return []
 

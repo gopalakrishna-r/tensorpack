@@ -118,7 +118,7 @@ class DistributedParameterServerBuilder(DataParallelBuilder, DistributedBuilderB
         custom_getter = OverrideCachingDevice(
             caching_devices, self.cpu_device, 1024 * 64)
 
-        with tf.variable_scope(tf.get_variable_scope(), custom_getter=custom_getter):
+        with tf.variable_scope(tf.compat.v1.get_variable_scope(), custom_getter=custom_getter):
             grad_list = DataParallelBuilder.build_on_towers(self.towers, get_grad_fn, devices)
         DataParallelBuilder._check_grad_list(grad_list)
 

@@ -47,7 +47,7 @@ class KerasModelCaller(object):
         Returns:
             output tensors of this tower, evaluated with the input tensors.
         """
-        reuse = tf.get_variable_scope().reuse
+        reuse = tf.compat.v1.get_variable_scope().reuse
 
         old_trainable_names = {x.name for x in tf.trainable_variables()}
         trainable_backup = backup_collection([tf.GraphKeys.TRAINABLE_VARIABLES])

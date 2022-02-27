@@ -53,7 +53,7 @@ class Model(ModelDesc):
         initializer = tf.random_uniform_initializer(-0.05, 0.05)
 
         def get_basic_cell():
-            cell = rnn.BasicLSTMCell(num_units=HIDDEN_SIZE, forget_bias=0.0, reuse=tf.get_variable_scope().reuse)
+            cell = rnn.BasicLSTMCell(num_units=HIDDEN_SIZE, forget_bias=0.0, reuse=tf.compat.v1.get_variable_scope().reuse)
             if self.training:
                 cell = rnn.DropoutWrapper(cell, output_keep_prob=1 - DROPOUT)
             return cell

@@ -38,7 +38,7 @@ class MultiTowerOfflinePredictor(OnlinePredictor):
                 tower_name = 'tower' + str(t)
 
                 device = '/gpu:{}'.format(t)
-                with tf.variable_scope(tf.get_variable_scope(), reuse=idx > 0), \
+                with tf.variable_scope(tf.compat.v1.get_variable_scope(), reuse=idx > 0), \
                         tf.device(device), \
                         PredictTowerContext(tower_name):
                     logger.info("Building graph for predict tower '{}' on device {} ...".format(tower_name, device))
@@ -106,7 +106,7 @@ class DataParallelOfflinePredictor(OnlinePredictor):
                 input = PlaceholderInput()
                 input.setup(new_sig)
 
-                with tf.variable_scope(tf.get_variable_scope(), reuse=idx > 0), \
+                with tf.variable_scope(tf.compat.v1.get_variable_scope(), reuse=idx > 0), \
                         tf.device('/gpu:{}'.format(t)), \
                         PredictTowerContext(tower_name):
                     config.tower_func(*input.get_input_tensors())

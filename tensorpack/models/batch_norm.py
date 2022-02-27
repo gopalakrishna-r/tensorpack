@@ -89,7 +89,7 @@ def get_sync_bn_mean_var(inputs, red_axis, sync_statistics):
                 from tensorflow.contrib.nccl.ops import gen_nccl_ops  # deprecated
             else:
                 from tensorflow.python.ops import gen_nccl_ops
-            shared_name = re.sub('tower[0-9]+/', '', tf.get_variable_scope().name)
+            shared_name = re.sub('tower[0-9]+/', '', tf.compat.v1.get_variable_scope().name)
             batch_mean = gen_nccl_ops.nccl_all_reduce(
                 input=batch_mean,
                 reduction='sum',
@@ -291,15 +291,14 @@ def BatchNorm(inputs, axis=None, *, training=None, momentum=0.9, epsilon=1e-5,
                 center=center, scale=scale,
                 beta_initializer=beta_initializer,
                 gamma_initializer=gamma_initializer,
-                fused=(ndims == 4 and axis in [1, 3]),
-                _reuse=tf.get_variable_scope().reuse)
+                fused=(ndims == 4 and axis in [1, 3]))
             use_fp16 = inputs.dtype == tf.float16
             if use_fp16:
                 # non-fused does not support fp16; fused does not support all layouts.
                 # we made our best guess here
                 tf_args['fused'] = True
-            layer = tf.layers.BatchNormalization(**tf_args)
-            xn = layer.apply(inputs, training=training, scope=tf.get_variable_scope())
+            layer = tf.keras.layers.BatchNormalization(**tf_args)
+            xn = layer.apply(inputs, training=training)
 
         # Add EMA variables to the correct collection
         if ctx.is_main_training_tower:
@@ -449,8 +448,8 @@ def BatchRenorm(x, rmax, dmax, *, momentum=0.9, epsilon=1e-5,
         renorm_momentum=0.99,
         gamma_initializer=gamma_initializer,
         fused=False,
-        _reuse=tf.get_variable_scope().reuse)
-    xn = layer.apply(x, training=ctx.is_training, scope=tf.get_variable_scope())
+        _reuse=tf.compat.v1.get_variable_scope().reuse)
+    xn = layer.apply(x, training=ctx.is_training, scope=tf.compat.v1.get_variable_scope())
 
     if ctx.is_main_training_tower:
         for v in layer.non_trainable_variables:

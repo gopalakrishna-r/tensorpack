@@ -114,6 +114,7 @@ def monkeypatch_tf_layers():
     if get_tf_version_tuple() >= (1, 4):
         return
     if not hasattr(tf.layers, 'Dense'):
+        print(f'Monkeypatching tf.layers.Dense due to version {get_tf_version_tuple()}')
         from tensorflow.python.layers.core import Dense
         tf.layers.Dense = Dense
 

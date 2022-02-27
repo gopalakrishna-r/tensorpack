@@ -20,7 +20,7 @@ def custom_getter_scope(custom_getter):
     Returns:
         The current variable scope with a custom_getter.
     """
-    scope = tf.get_variable_scope()
+    scope = tf.compat.v1.get_variable_scope()
     if get_tf_version_tuple() >= (1, 5):
         with tf.variable_scope(
                 scope, custom_getter=custom_getter,

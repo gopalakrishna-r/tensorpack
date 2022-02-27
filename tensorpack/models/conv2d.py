@@ -48,19 +48,12 @@ def Conv2D(
     * ``W``: weights
     * ``b``: bias
     """
-    if kernel_initializer is None:
-        if get_tf_version_tuple() <= (1, 12):
-            kernel_initializer = tf.contrib.layers.variance_scaling_initializer(
-                2.0)  # deprecated
-        else:
-            kernel_initializer = tf.keras.initializers.VarianceScaling(
-                2.0, distribution='untruncated_normal')
     dilation_rate = shape2d(dilation_rate)
 
     if split == 1 and dilation_rate == [1, 1]:
         # tf.layers.Conv2D has bugs with dilations (https://github.com/tensorflow/tensorflow/issues/26797)
         with rename_get_variable({'kernel': 'W', 'bias': 'b'}):
-            layer = tf.layers.Conv2D(
+            layer = tf.keras.layers.Conv2D(
                 filters,
                 kernel_size,
                 strides=strides,
@@ -73,9 +66,8 @@ def Conv2D(
                 bias_initializer=bias_initializer,
                 kernel_regularizer=kernel_regularizer,
                 bias_regularizer=bias_regularizer,
-                activity_regularizer=activity_regularizer,
-                _reuse=tf.get_variable_scope().reuse)
-            ret = layer.apply(inputs, scope=tf.get_variable_scope())
+                activity_regularizer=activity_regularizer)
+            ret = layer.apply(inputs)
             ret = tf.identity(ret, name='output')
 
         ret.variables = VariableHolder(W=layer.kernel)
@@ -182,17 +174,9 @@ def Conv2DTranspose(
     * ``W``: weights
     * ``b``: bias
     """
-    if kernel_initializer is None:
-        if get_tf_version_tuple() <= (1, 12):
-            kernel_initializer = tf.contrib.layers.variance_scaling_initializer(
-                2.0)  # deprecated
-        else:
-            kernel_initializer = tf.keras.initializers.VarianceScaling(
-                2.0, distribution='untruncated_normal')
-
     if get_tf_version_tuple() <= (1, 12):
         with rename_get_variable({'kernel': 'W', 'bias': 'b'}):
-            layer = tf.layers.Conv2DTranspose(
+            layer = tf.keras.layers.Conv2DTranspose(
                 filters,
                 kernel_size,
                 strides=strides,
@@ -204,9 +188,8 @@ def Conv2DTranspose(
                 bias_initializer=bias_initializer,
                 kernel_regularizer=kernel_regularizer,
                 bias_regularizer=bias_regularizer,
-                activity_regularizer=activity_regularizer,
-                _reuse=tf.get_variable_scope().reuse)
-            ret = layer.apply(inputs, scope=tf.get_variable_scope())
+                activity_regularizer=activity_regularizer)
+            ret = layer.apply(inputs)
             ret = tf.identity(ret, name='output')
         ret.variables = VariableHolder(W=layer.kernel)
         if use_bias:

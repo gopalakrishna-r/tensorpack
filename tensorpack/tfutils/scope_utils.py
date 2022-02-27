@@ -36,7 +36,7 @@ def auto_reuse_variable_scope(func):
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        scope = tf.get_variable_scope()
+        scope = tf.compat.v1.get_variable_scope()
         h = hash((tf.get_default_graph(), scope.name))
         # print("Entering " + scope.name + " reuse: " + str(h in used_scope))
         if h in used_scope:

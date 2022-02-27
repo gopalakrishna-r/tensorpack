@@ -27,8 +27,8 @@ def MaxPooling(
     """
     if strides is None:
         strides = pool_size
-    layer = tf.layers.MaxPooling2D(pool_size, strides, padding=padding, data_format=data_format)
-    ret = layer.apply(inputs, scope=tf.get_variable_scope())
+    layer = tf.keras.layers.MaxPooling2D(pool_size, strides, padding=padding, data_format=data_format)
+    ret = layer.apply(inputs)
     return tf.identity(ret, name='output')
 
 
@@ -47,8 +47,8 @@ def AvgPooling(
     """
     if strides is None:
         strides = pool_size
-    layer = tf.layers.AveragePooling2D(pool_size, strides, padding=padding, data_format=data_format)
-    ret = layer.apply(inputs, scope=tf.get_variable_scope())
+    layer = tf.keras.layers.AveragePooling2D(pool_size, strides, padding=padding, data_format=data_format)
+    ret = layer.apply(inputs)
     return tf.identity(ret, name='output')
 
 
@@ -81,8 +81,7 @@ def UnPooling2x2ZeroFilled(x):
         return tf.reshape(out, out_size)
     else:
         shv = tf.shape(x)
-        ret = tf.reshape(out, tf.stack([-1, shv[1] * 2, shv[2] * 2, sh[3]]))
-        return ret
+        return tf.reshape(out, tf.stack([-1, shv[1] * 2, shv[2] * 2, sh[3]]))
 
 
 @layer_register(log_shape=True)
