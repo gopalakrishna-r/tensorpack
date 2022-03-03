@@ -24,14 +24,14 @@ def Conv2D(
         inputs,
         filters,
         kernel_size,
-        strides=(1, 1),
-        padding='same',
+        strides = (1, 1),
+        padding = None,
         data_format='channels_last',
         dilation_rate=(1, 1),
         activation=None,
         use_bias=True,
-        kernel_initializer=None,
-        bias_initializer=tf.zeros_initializer(),
+        kernel_initializer='glorot_uniform',
+        bias_initializer= 'zeros',
         kernel_regularizer=None,
         bias_regularizer=None,
         activity_regularizer=None,
@@ -50,7 +50,7 @@ def Conv2D(
     """
     dilation_rate = shape2d(dilation_rate)
 
-    if split == 1 and dilation_rate == [1, 1]:
+    if (split == 1) and (dilation_rate == [1, 1]):
         # tf.layers.Conv2D has bugs with dilations (https://github.com/tensorflow/tensorflow/issues/26797)
         with rename_get_variable({'kernel': 'W', 'bias': 'b'}):
             layer = tf.keras.layers.Conv2D(

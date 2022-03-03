@@ -129,8 +129,8 @@ def get_sync_bn_mean_var(inputs, red_axis, sync_statistics):
 @disable_autograph()
 def BatchNorm(inputs, axis=None, *, training=None, momentum=0.9, epsilon=1e-5,
               center=True, scale=True,
-              beta_initializer=tf.zeros_initializer(),
-              gamma_initializer=tf.ones_initializer(),
+              beta_initializer,
+              gamma_initializer,
               virtual_batch_size=None,
               data_format='channels_last',
               ema_update='default',

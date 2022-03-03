@@ -31,8 +31,8 @@ def FullyConnected(
         units,
         activation=None,
         use_bias=True,
-        kernel_initializer=None,
-        bias_initializer=tf.zeros_initializer(),
+        kernel_initializer='glorot_uniform',
+        bias_initializer='zeros',
         kernel_regularizer=None,
         bias_regularizer=None,
         activity_regularizer=None):

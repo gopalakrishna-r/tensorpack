@@ -14,6 +14,7 @@ if STATICA_HACK:
     from nonlin import *
     from pool import *
     from regularize import *
+    from flatten import *
 
 
 from pkgutil import iter_modules

@@ -18,9 +18,9 @@ __all__ = ['MaxPooling', 'FixedUnPooling', 'AvgPooling', 'GlobalAvgPooling']
     name_mapping={'shape': 'pool_size', 'stride': 'strides'})
 def MaxPooling(
         inputs,
-        pool_size,
+        pool_size=(2, 2),
         strides=None,
-        padding='valid',
+        padding='VALID',
         data_format='channels_last'):
     """
     Same as `tf.layers.MaxPooling2D`. Default strides is equal to pool_size.
@@ -39,8 +39,8 @@ def MaxPooling(
 def AvgPooling(
         inputs,
         pool_size,
-        strides=None,
-        padding='valid',
+        strides = None,
+        padding = 'VALID',
         data_format='channels_last'):
     """
     Same as `tf.layers.AveragePooling2D`. Default strides is equal to pool_size.

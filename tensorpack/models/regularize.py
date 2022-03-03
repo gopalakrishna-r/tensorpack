@@ -141,8 +141,8 @@ def regularize_cost_from_collection(name='regularize_cost'):
         return tf.constant(0, dtype=tf.float32, name='empty_' + name)
 
 
-@layer_register(use_scope=None)
-def Dropout(x, *args, **kwargs):
+@layer_register(log_shape=True)
+def Dropout(inputs, *args, **kwargs):
     """
     Same as `tf.layers.dropout`.
     However, for historical reasons, the first positional argument is
@@ -153,10 +153,7 @@ def Dropout(x, *args, **kwargs):
         kwargs['training'] = kwargs.pop('is_training')
     if len(args) > 0:
         if args[0] != 0.5:
-            logger.warn(
-                "The first positional argument to tensorpack.Dropout is the probability to keep, rather than to drop. "
-                "This is different from the rate argument in tf.layers.Dropout due to historical reasons. "
-                "To mimic tf.layers.Dropout, explicitly use keyword argument 'rate' instead")
+            raise ValueError('Dropout: rate must be 0.5')
         rate = 1 - args[0]
     elif 'keep_prob' in kwargs:
         assert 'rate' not in kwargs, "Cannot set both keep_prob and rate!"
@@ -168,8 +165,7 @@ def Dropout(x, *args, **kwargs):
 
     if kwargs.get('training', None) is None:
         kwargs['training'] = get_current_tower_context().is_training
-
-    if get_tf_version_tuple() <= (1, 12):
-        return tf.layers.dropout(x, rate=rate, **kwargs)
-    else:
-        return tf.nn.dropout(x, rate=rate if kwargs['training'] else 0.)
+  
+    layer = tf.keras.layers.Dropout(rate=rate if kwargs['training'] else 0.)
+    ret = layer.apply(inputs)
+    return tf.identity(ret, name='output')
