@@ -25,7 +25,7 @@ def Conv2D(
         filters,
         kernel_size,
         strides = (1, 1),
-        padding = None,
+        padding = 'valid',
         data_format='channels_last',
         dilation_rate=(1, 1),
         activation=None,
